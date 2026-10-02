@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: cloudpulse-x
+  labels:
+    app.kubernetes.io/name: cloudpulse-x
+    environment: production

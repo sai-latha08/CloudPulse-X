@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: cloudpulse-config
+  namespace: cloudpulse-x
+data:
+  CLOUD_PROVIDER: "demo"
+  AWS_REGION: "us-east-1"
+  VITE_API_URL: "/api"
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: cloudpulse-secrets
+  namespace: cloudpulse-x
+type: Opaque
+data:
+  # Base64 encoded secrets
+  DATABASE_URL: cG9zdGdyZXNxbDovL2Nsb3VkcHVsc2U6Y2xvdWRwdWxzZV9zZWNyZXRfMjAyNkBwb3N0Z3JlczU0MzIvY2xvdWRwdWxzZV9kYg==
+  SECRET_KEY: Y2xvdWRwdWxzZS1zdXBlci1zZWNyZXQtand0LWtleS0yMDI2

@@ -1,0 +1,60 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: cloudpulse-db
+    environment:
+      POSTGRES_USER: cloudpulse
+      POSTGRES_PASSWORD: cloudpulse_secret_2026
+      POSTGRES_DB: cloudpulse_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U cloudpulse -d cloudpulse_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - cloudpulse-net
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: cloudpulse-backend
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      - DATABASE_URL=postgresql://cloudpulse:cloudpulse_secret_2026@postgres:5432/cloudpulse_db
+      - CLOUD_PROVIDER=demo
+      - SECRET_KEY=cloudpulse-production-secret-key-2026
+      - AWS_REGION=us-east-1
+    ports:
+      - "8000:8000"
+    networks:
+      - cloudpulse-net
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: cloudpulse-frontend
+    depends_on:
+      - backend
+    environment:
+      - VITE_API_URL=http://localhost:8000/api
+    ports:
+      - "3000:80"
+    networks:
+      - cloudpulse-net
+
+volumes:
+  postgres_data:
+
+networks:
+  cloudpulse-net:
+    driver: bridge
